@@ -1,0 +1,98 @@
+[
+  {
+    "_id": "69ad60f7ecfc799b69b6761d",
+    "user": "69abe3b67c2ae1834c622f3a",
+    "title": "Lease Expired",
+    "message": "The lease contract for Sunset has expired.",
+    "type": "lease_alert",
+    "referenceId": "69abe3d57c2ae1834c622f56",
+    "isRead": false,
+    "createdAt": "2026-03-08T11:43:51.834Z",
+    "updatedAt": "2026-03-08T11:43:51.834Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad60f7ecfc799b69b6761f",
+    "user": "699ac32dd6a3708cadb6096b",
+    "title": "Lease Expired",
+    "message": "The lease contract for Sunset has expired.",
+    "type": "lease_alert",
+    "referenceId": "69abe3d57c2ae1834c622f56",
+    "isRead": true,
+    "createdAt": "2026-03-08T11:43:51.841Z",
+    "updatedAt": "2026-03-08T11:45:48.377Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad60f7ecfc799b69b67622",
+    "user": "69ad58938a6a3da2b175bb3c",
+    "title": "Lease Expired Today",
+    "message": "The lease contract for harroonghj has expired today.",
+    "type": "lease_alert",
+    "referenceId": "69ad5f39123e8bf2d3e9feb7",
+    "isRead": false,
+    "createdAt": "2026-03-08T11:43:51.849Z",
+    "updatedAt": "2026-03-08T11:43:51.849Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad60f7ecfc799b69b67624",
+    "user": "699ac32dd6a3708cadb6096b",
+    "title": "Lease Expired Today",
+    "message": "The lease contract for harroonghj has expired today.",
+    "type": "lease_alert",
+    "referenceId": "69ad5f39123e8bf2d3e9feb7",
+    "isRead": true,
+    "createdAt": "2026-03-08T11:43:51.852Z",
+    "updatedAt": "2026-03-08T11:45:46.624Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ae3f1dfcffc045d120dc08",
+    "user": "69abe3b67c2ae1834c622f3a",
+    "title": "Lease Expired",
+    "message": "The lease contract for Sunset has expired.",
+    "type": "lease_alert",
+    "referenceId": "69abe3d57c2ae1834c622f56",
+    "isRead": false,
+    "createdAt": "2026-03-09T03:31:41.626Z",
+    "updatedAt": "2026-03-09T03:31:41.626Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ae3f1dfcffc045d120dc0a",
+    "user": "699ac32dd6a3708cadb6096b",
+    "title": "Lease Expired",
+    "message": "The lease contract for Sunset has expired.",
+    "type": "lease_alert",
+    "referenceId": "69abe3d57c2ae1834c622f56",
+    "isRead": false,
+    "createdAt": "2026-03-09T03:31:41.633Z",
+    "updatedAt": "2026-03-09T03:31:41.633Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ae3f1dfcffc045d120dc0d",
+    "user": "69ad58938a6a3da2b175bb3c",
+    "title": "Lease Expired Today",
+    "message": "The lease contract for Mangala Land has expired today.",
+    "type": "lease_alert",
+    "referenceId": "69ad5f39123e8bf2d3e9feb7",
+    "isRead": false,
+    "createdAt": "2026-03-09T03:31:41.640Z",
+    "updatedAt": "2026-03-09T03:31:41.640Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ae3f1dfcffc045d120dc0f",
+    "user": "699ac32dd6a3708cadb6096b",
+    "title": "Lease Expired Today",
+    "message": "The lease contract for Mangala Land has expired today.",
+    "type": "lease_alert",
+    "referenceId": "69ad5f39123e8bf2d3e9feb7",
+    "isRead": false,
+    "createdAt": "2026-03-09T03:31:41.644Z",
+    "updatedAt": "2026-03-09T03:31:41.644Z",
+    "__v": 0
+  }
+]

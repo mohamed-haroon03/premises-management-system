@@ -1,0 +1,36 @@
+{
+  "leases": [
+    {
+      "id": "69abe4277c2ae1834c622f70",
+      "status": "Active",
+      "endDate": "2026-03-08T00:00:00.000Z"
+    },
+    {
+      "id": "69ad5f9a1f9bba80eba00e4b",
+      "status": "Active",
+      "endDate": "2026-03-09T00:00:00.000Z"
+    }
+  ],
+  "rents": [
+    {
+      "id": "69abe4577c2ae1834c622f81",
+      "status": "Active",
+      "endDate": "2027-03-07T00:00:00.000Z"
+    },
+    {
+      "id": "69ac12d544c728f9be4f5636",
+      "status": "Active",
+      "endDate": "2027-03-03T00:00:00.000Z"
+    },
+    {
+      "id": "69ad59028a6a3da2b175bb77",
+      "status": "Active",
+      "endDate": "2027-03-08T00:00:00.000Z"
+    },
+    {
+      "id": "69ae3e115dad9f1f8b208d69",
+      "status": "Active",
+      "endDate": "2027-03-09T00:00:00.000Z"
+    }
+  ]
+}

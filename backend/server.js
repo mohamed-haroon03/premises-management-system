@@ -21,9 +21,17 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected...'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+const connectDB = require('./config/db');
+connectDB();
+
+// Middleware to verify DB connection readiness
+app.use((req, res, next) => {
+  if (req.path === '/api/health') return next();
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Database connection is initializing or unavailable. Please retry in a few seconds.' });
+  }
+  next();
+});
 
 // Routes
 const authRoutes = require('./routes/authRoutes');

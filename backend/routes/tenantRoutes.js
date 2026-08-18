@@ -14,11 +14,17 @@ const protect = async (req, res, next) => {
 };
 
 // @route   GET /api/tenants
-// @access  Private (Landlord usually fetches all tenants associated with their properties, but simplified here)
+// @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        // Basic implementation: fetch all for now, ideally filter by landlord
-        const tenants = await Tenant.find().populate('currentUnit').populate('user', 'name email');
+        const Property = require('../models/Property');
+        const Unit = require('../models/Unit');
+        
+        const properties = await Property.find({ owner: req.user.id }).select('_id');
+        const units = await Unit.find({ property: { $in: properties } }).select('_id');
+        const unitIds = units.map(u => u._id);
+
+        const tenants = await Tenant.find({ currentUnit: { $in: unitIds } }).populate('currentUnit').populate('user', 'name email');
         res.json(tenants);
     } catch (error) { res.status(500).json({ message: error.message }); }
 });

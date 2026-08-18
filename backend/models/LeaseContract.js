@@ -50,4 +50,6 @@ const leaseContractSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+leaseContractSchema.index({ unit: 1, status: 1 });
+
 module.exports = mongoose.model('LeaseContract', leaseContractSchema);

@@ -19,8 +19,8 @@ const OwnerDashboard = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [statsRes, notifRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/dashboard/owner', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:5000/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/dashboard/owner`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications`, { headers: { Authorization: `Bearer ${token}` } })
                 ]);
 
                 setStats(statsRes.data);
@@ -68,10 +68,10 @@ const OwnerDashboard = () => {
                 <StatCard title="Total Properties" value={stats?.totalProperties || 0} icon={<Home className="text-indigo-500" />} />
                 <StatCard title="Total Units" value={stats?.totalUnits || 0} sub={`${stats?.occupancyRate || 0}% Occupied`} icon={<Building2 className="text-purple-500" />} />
                 <StatCard title="Total Payment Amount" value={`₹${stats?.monthlyIncome?.toLocaleString() || 0}`} icon={<DollarSign className="text-emerald-500" />} />
-                <StatCard 
-                    title="Pending Rent" 
-                    value={`₹${stats?.pendingRent?.toLocaleString() || 0}`} 
-                    icon={<WalletCards className="text-rose-500" />} 
+                <StatCard
+                    title="Pending Rent"
+                    value={`₹${stats?.pendingRent?.toLocaleString() || 0}`}
+                    icon={<WalletCards className="text-rose-500" />}
                     onClick={() => setShowPendingModal(true)}
                 />
             </div>
@@ -215,8 +215,8 @@ const OwnerDashboard = () => {
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-bold text-rose-600 text-lg">₹{detail.amountPending?.toLocaleString()}</p>
-                                                <Link 
-                                                    to={`/tenants/${detail.tenantId}`} 
+                                                <Link
+                                                    to={`/tenants/${detail.tenantId}`}
                                                     className="text-xs text-indigo-600 font-semibold hover:underline mt-1 inline-block"
                                                 >
                                                     View Tenant →
@@ -240,7 +240,7 @@ const OwnerDashboard = () => {
 };
 
 const StatCard = ({ title, value, icon, sub, onClick }) => (
-    <div 
+    <div
         onClick={onClick}
         className={`relative bg-white pt-6 px-6 pb-4 sm:pt-6 sm:px-6 shadow-sm rounded-2xl border border-gray-100 overflow-hidden transition-all ${onClick ? 'cursor-pointer hover:shadow-md hover:border-indigo-200 hover:-translate-y-1' : 'hover:shadow-md'}`}
     >

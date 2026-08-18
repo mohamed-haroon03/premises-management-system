@@ -1,5 +1,30 @@
+# Dependencies
 node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Build files
 dist/
-.DS_Store
+build/
+
+# Logs
 *.log
+npm-debug.log*
+
+# Local/test files
+backend/out.txt
+backend/test_prop_tax.js
+frontend/build_log.txt
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

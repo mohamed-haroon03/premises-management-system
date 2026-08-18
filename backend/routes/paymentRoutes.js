@@ -17,8 +17,14 @@ const protect = async (req, res, next) => {
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
+        const Property = require('../models/Property');
+        const Unit = require('../models/Unit');
+        const properties = await Property.find({ owner: req.user.id }).select('_id');
+        const units = await Unit.find({ property: { $in: properties } }).select('_id');
+        const unitIds = units.map(u => u._id);
+
         // Optionally filter by category if ?category=...
-        const filters = {};
+        const filters = { unit: { $in: unitIds } };
         if (req.query.category) filters.paymentCategory = req.query.category;
 
         const payments = await Payment.find(filters)

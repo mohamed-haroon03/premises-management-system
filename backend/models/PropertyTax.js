@@ -25,4 +25,6 @@ const propertyTaxSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+propertyTaxSchema.index({ property: 1 });
+
 module.exports = mongoose.model('PropertyTax', propertyTaxSchema);

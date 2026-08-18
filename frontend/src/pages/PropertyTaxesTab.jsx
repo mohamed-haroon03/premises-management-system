@@ -22,7 +22,7 @@ const PropertyTaxesTab = ({ propertyId }) => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:5000/api/taxes/property/${propertyId}`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/taxes/property/${propertyId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -45,7 +45,7 @@ const PropertyTaxesTab = ({ propertyId }) => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                'http://localhost:5000/api/taxes',
+                `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/taxes`,
                 {
                     propertyId,
                     startYear: mainForm.startYear,
@@ -70,7 +70,7 @@ const PropertyTaxesTab = ({ propertyId }) => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:5000/api/taxes/property/${propertyId}/pay`,
+                `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/taxes/property/${propertyId}/pay`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -79,4 +79,7 @@ paymentSchema.pre('validate', function () {
     }
 });
 
+paymentSchema.index({ unit: 1, paymentDate: -1 });
+paymentSchema.index({ paymentCategory: 1, unit: 1, status: 1 }); // For dashboard query
+
 module.exports = mongoose.model('Payment', paymentSchema);

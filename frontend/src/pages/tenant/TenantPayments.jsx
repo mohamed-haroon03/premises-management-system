@@ -15,11 +15,11 @@ const TenantPayments = () => {
     const fetchMyPayments = async () => {
         try {
             // In a real application, we would pass auth token, and backend would only return MY payments.
-            // E.g., const { data } = await axios.get('http://localhost:5000/api/payments/me');
+            // E.g., const { data } = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/me`);
 
             // Since we don't have the `me` endpoint yet, let's do a basic fetch and mock filter 
             // or just assume the data returned is tailored if dummy data exists.
-            const { data } = await axios.get('http://localhost:5000/api/payments');
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`);
 
             // Example: filter locally (in reality, backend should do this!)
             // const myPayments = data.filter(p => p.tenant?._id === user?.tenantId); 

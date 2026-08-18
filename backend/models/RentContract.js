@@ -48,4 +48,6 @@ const rentContractSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+rentContractSchema.index({ unit: 1, status: 1 });
+
 module.exports = mongoose.model('RentContract', rentContractSchema);

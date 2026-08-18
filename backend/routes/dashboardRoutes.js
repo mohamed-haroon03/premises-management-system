@@ -35,50 +35,81 @@ router.get('/owner', protect, async (req, res) => {
         const vacantUnitsCount = totalUnitsCount - occupiedUnitsCount;
 
         // 1.5 Active Leases & Total Payment Amount Calculation
-        const activeLeaseContractsList = await LeaseContract.find({
-            unit: { $in: unitIds },
-            status: 'Active'
-        }).select('_id leaseAmount');
+        // OPTIMIZATION: Removed duplicate RentContract fetch. We will fetch everything in Promise.all
+
+        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+        const currentYear = new Date().getFullYear();
+        const monthRegex = new RegExp(currentMonth, 'i');
+        const yearRegex = new RegExp(currentYear.toString());
+
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+        sixMonthsAgo.setDate(1); // Start of that month
+        sixMonthsAgo.setHours(0, 0, 0, 0);
+
+        const [
+            activeLeaseContractsList,
+            activeRentContracts,
+            paymentsForGraph,
+            allCurrentMonthPayments
+        ] = await Promise.all([
+            LeaseContract.find({
+                unit: { $in: unitIds },
+                status: 'Active'
+            }).select('_id leaseAmount'),
+            
+            RentContract.find({
+                unit: { $in: unitIds },
+                status: 'Active'
+            }).populate('tenant', 'name')
+              .populate({
+                path: 'unit',
+                select: 'unitNumber property',
+                populate: {
+                    path: 'property',
+                    select: 'propertyName'
+                }
+            }).select('unit tenant monthlyRentAmount securityDeposit'),
+            
+            Payment.aggregate([
+                {
+                    $match: {
+                        paymentDate: { $gte: sixMonthsAgo },
+                        unit: { $in: unitIds },
+                        $or: [{ status: 'Paid' }, { status: 'Late' }, { status: { $exists: false } }]
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            month: { $month: "$paymentDate" },
+                            year: { $year: "$paymentDate" }
+                        },
+                        income: { $sum: "$amountPaid" }
+                    }
+                },
+                { $sort: { "_id.year": 1, "_id.month": 1 } }
+            ]),
+            
+            Payment.find({
+                unit: { $in: unitIds },
+                paymentCategory: 'Monthly Residential Rent',
+                rentPaymentType: 'Monthly Rent',
+                rentMonthYear: monthRegex,
+                status: { $in: ['Paid', 'Late'] }
+            }).select('unit tenant rentMonthYear amountPaid')
+        ]);
+
         const activeLeases = activeLeaseContractsList.length;
 
-        const allActiveRentContractsList = await RentContract.find({
-            unit: { $in: unitIds },
-            status: 'Active'
-        }).select('_id securityDeposit monthlyRentAmount');
-
-        const totalSecurityDeposit = allActiveRentContractsList.reduce((sum, c) => sum + (c.securityDeposit || 0), 0);
-        const totalMonthlyRent = allActiveRentContractsList.reduce((sum, c) => sum + (c.monthlyRentAmount || 0), 0);
+        const totalSecurityDeposit = activeRentContracts.reduce((sum, c) => sum + (c.securityDeposit || 0), 0);
+        const totalMonthlyRent = activeRentContracts.reduce((sum, c) => sum + (c.monthlyRentAmount || 0), 0);
         const totalLeaseAmount = activeLeaseContractsList.reduce((sum, c) => sum + (c.leaseAmount || 0), 0);
 
         // The user requested total payment amount as the sum of these three fields
         const monthlyIncome = totalSecurityDeposit + totalMonthlyRent + totalLeaseAmount;
 
         // 3. Dynamic Revenue Graph Logic (Last 6 Months, Filtered by Landlord's Units)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-        sixMonthsAgo.setDate(1); // Start of that month
-        sixMonthsAgo.setHours(0, 0, 0, 0);
-
-        const paymentsForGraph = await Payment.aggregate([
-            {
-                $match: {
-                    paymentDate: { $gte: sixMonthsAgo },
-                    unit: { $in: unitIds },
-                    $or: [{ status: 'Paid' }, { status: 'Late' }, { status: { $exists: false } }]
-                }
-            },
-            {
-                $group: {
-                    _id: {
-                        month: { $month: "$paymentDate" },
-                        year: { $year: "$paymentDate" }
-                    },
-                    income: { $sum: "$amountPaid" }
-                }
-            },
-            { $sort: { "_id.year": 1, "_id.month": 1 } }
-        ]);
-
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const revenueData = [];
 
@@ -97,53 +128,25 @@ router.get('/owner', protect, async (req, res) => {
             });
         }
 
-        // 4. Calculate Pending Rent (Simplified Logic)
-        const activeRentContracts = await RentContract.find({
-            unit: { $in: unitIds },
-            status: 'Active'
-        }).populate('tenant', 'name')
-          .populate({
-            path: 'unit',
-            select: 'unitNumber property',
-            populate: {
-                path: 'property',
-                select: 'propertyName'
-            }
-        }).select('unit tenant monthlyRentAmount');
-
-        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-        const currentYear = new Date().getFullYear();
+        // 4. Calculate Pending Rent (Optimized O(N) Lookup)
         let totalPendingRent = 0;
         const pendingRentDetails = [];
 
-        // PRE-FETCH ALL PAYMENTS FOR THIS MONTH TO AVOID N+1 QUERIES
-        const monthRegex = new RegExp(currentMonth, 'i');
-        const yearRegex = new RegExp(currentYear.toString());
-        
-        const allCurrentMonthPayments = await Payment.find({
-            unit: { $in: unitIds },
-            paymentCategory: 'Monthly Residential Rent',
-            rentPaymentType: 'Monthly Rent',
-            rentMonthYear: monthRegex,
-            status: { $in: ['Paid', 'Late'] }
-        }).select('unit tenant rentMonthYear amountPaid');
+        const paymentMap = new Map();
+        for (const p of allCurrentMonthPayments) {
+            if (!p.rentMonthYear) continue;
+            if (!yearRegex.test(p.rentMonthYear) && /\d{4}/.test(p.rentMonthYear)) continue;
+            
+            const key = `${p.unit}_${p.tenant}`;
+            paymentMap.set(key, (paymentMap.get(key) || 0) + p.amountPaid);
+        }
 
         for (const contract of activeRentContracts) {
-            // Check if a payment for current month has been made in memory
-            const paymentsFound = allCurrentMonthPayments.filter(p => 
-                p.unit && contract.unit && p.unit.toString() === contract.unit._id.toString() &&
-                p.tenant && contract.tenant && p.tenant.toString() === contract.tenant._id.toString()
-            );
-
-            const thisMonthPayments = paymentsFound.filter(p => {
-                if (!p.rentMonthYear) return false;
-                if (yearRegex.test(p.rentMonthYear)) return true;
-                if (!/\d{4}/.test(p.rentMonthYear)) return true;
-                return false;
-            });
-            const totalPaidThisMonth = thisMonthPayments.reduce((sum, p) => sum + p.amountPaid, 0);
-
-            console.log("DASHBOARD CALC:", { contractAmount: contract.monthlyRentAmount, paymentsFound: paymentsFound.length, thisMonthPayments: thisMonthPayments.length, totalPaidThisMonth });
+            const unitIdStr = contract.unit && contract.unit._id ? contract.unit._id.toString() : '';
+            const tenantIdStr = contract.tenant && contract.tenant._id ? contract.tenant._id.toString() : '';
+            const key = `${unitIdStr}_${tenantIdStr}`;
+            
+            const totalPaidThisMonth = paymentMap.get(key) || 0;
 
             if (totalPaidThisMonth < contract.monthlyRentAmount) {
                 const pendingAmt = contract.monthlyRentAmount - totalPaidThisMonth;

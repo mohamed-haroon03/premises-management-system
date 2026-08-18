@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, { email, password });
             const { token, ...userData } = response.data;
 
             localStorage.setItem('token', token);
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password, role) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, role });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, { name, email, password, role });
             const { token, ...userData } = response.data;
 
             localStorage.setItem('token', token);

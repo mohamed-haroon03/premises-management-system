@@ -21,7 +21,7 @@ const Notifications = () => {
         try {
             if (showLoading) setLoading(true);
             const token = localStorage.getItem('token');
-            const { data } = await axios.get('http://localhost:5000/api/notifications', {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(data);
@@ -35,7 +35,7 @@ const Notifications = () => {
     const markAsRead = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.map(n =>
@@ -49,7 +49,7 @@ const Notifications = () => {
     const deleteNotification = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/notifications/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.filter(n => n._id !== id));
@@ -62,7 +62,7 @@ const Notifications = () => {
         if (!window.confirm("Are you sure you want to clear all read notifications?")) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/notifications/all-read`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/all-read`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.filter(n => !n.isRead));

@@ -342,12 +342,12 @@ const Payments = () => {
             }
 
             if (isEditing) {
-                const { data } = await axios.put(`http://localhost:5000/api/payments/${editId}`, payload, {
+                const { data } = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/${editId}`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPayments(payments.map(p => p._id === editId ? data : p));
             } else {
-                const { data } = await axios.post(`http://localhost:5000/api/payments`, payload, {
+                const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPayments([data, ...payments]);
@@ -368,7 +368,7 @@ const Payments = () => {
     const fetchPayments = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get(`http://localhost:5000/api/payments?category=${activeTab}`);
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments?category=${activeTab}`);
             setPayments(data);
         } catch (error) {
             console.error('Error fetching payments', error);
@@ -407,7 +407,7 @@ const Payments = () => {
         if (!window.confirm("Are you sure you want to delete this payment? This action cannot be undone.")) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/payments/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPayments(payments.filter(p => p._id !== id));

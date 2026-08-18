@@ -74,6 +74,11 @@ exports.payTax = async (req, res) => {
         const tax = await PropertyTax.findOne({ property: req.params.propertyId });
         if (!tax) return res.status(404).json({ message: 'Tax record not found' });
 
+        // Auto-advance by 3 months
+        const nextDate = new Date(tax.nextDueDate);
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        
+        tax.nextDueDate = nextDate;
         tax.status = 'Paid';
         await tax.save();
 

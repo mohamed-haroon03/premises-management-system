@@ -47,4 +47,6 @@ const propertySchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+propertySchema.index({ owner: 1, status: 1 });
+
 module.exports = mongoose.model('Property', propertySchema);

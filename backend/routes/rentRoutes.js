@@ -18,7 +18,12 @@ const protect = async (req, res, next) => {
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        const rents = await RentContract.find()
+        const Property = require('../models/Property');
+        const properties = await Property.find({ owner: req.user.id }).select('_id');
+        const units = await Unit.find({ property: { $in: properties } }).select('_id');
+        const unitIds = units.map(u => u._id);
+
+        const rents = await RentContract.find({ unit: { $in: unitIds } })
             .populate({
                 path: 'unit',
                 populate: { path: 'property' }

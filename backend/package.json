@@ -24,6 +24,7 @@
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
+    "mongodb-memory-server-core": "^11.2.0",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.14"
   }

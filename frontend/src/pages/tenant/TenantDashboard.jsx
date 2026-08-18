@@ -19,7 +19,7 @@ const TenantDashboard = () => {
             // Assuming backend has a route like /api/tenants/me that uses req.user._id
             // For now, we'll just mock the response to show the UI structure if API fails
             try {
-                const { data } = await axios.get('http://localhost:5000/api/tenants');
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tenants`);
                 // Just grab the first one for demo purposes if the dedicated route isn't built
                 setTenantInfo(data[0] || mockTenantData);
             } catch (e) {

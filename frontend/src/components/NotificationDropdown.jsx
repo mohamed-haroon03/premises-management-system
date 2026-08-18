@@ -22,7 +22,7 @@ const NotificationDropdown = () => {
     const fetchNotifications = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/notifications', {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(res.data);
@@ -34,7 +34,7 @@ const NotificationDropdown = () => {
     const markAsRead = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
